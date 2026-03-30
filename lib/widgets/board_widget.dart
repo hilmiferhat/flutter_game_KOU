@@ -11,24 +11,38 @@ class BoardWidget extends StatelessWidget {
     final controller = context.watch<GameController>();
 
     return Container(
-      color: const Color(0xFF0F0F23),
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: GameController.cols,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: GameController.rows * GameController.cols,
-        itemBuilder: (context, index) {
-          final row = index ~/ GameController.cols;
-          final col = index % GameController.cols;
-          final block = controller.board[row][col];
+      decoration: BoxDecoration(
+        color: const Color(0xFF110C18),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2A1F3A), width: 1),
+        boxShadow: [
+          BoxShadow(
+              color: const Color(0xFF7B1FA2).withAlpha(15),
+              blurRadius: 20,
+              spreadRadius: 2),
+        ],
+      ),
+      padding: const EdgeInsets.all(3),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: GameController.cols,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: GameController.rows * GameController.cols,
+          itemBuilder: (context, index) {
+            final row = index ~/ GameController.cols;
+            final col = index % GameController.cols;
+            final block = controller.board[row][col];
 
-          return BlockWidget(
-            block: block,
-            onTap: () => controller.onBlockTap(row, col),
-          );
-        },
+            return BlockWidget(
+              block: block,
+              onTap: () => controller.onBlockTap(row, col),
+            );
+          },
+        ),
       ),
     );
   }

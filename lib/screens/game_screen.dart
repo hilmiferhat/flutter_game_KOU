@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/game_controller.dart';
@@ -25,29 +26,25 @@ class _GameScreenState extends State<GameScreen> {
     final controller = context.watch<GameController>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F23),
+      backgroundColor: const Color(0xFF0D0A12),
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               children: [
-                // HUD
                 const HudWidget(),
-                // Oyun alanı (8x10 grid, ekrana sığdır)
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: AspectRatio(
                       aspectRatio: GameController.cols / GameController.rows,
                       child: const BoardWidget(),
                     ),
                   ),
                 ),
-                // Alt kontrol alanı
                 _buildBottomBar(controller),
               ],
             ),
-            // Oyun sonu overlay
             if (controller.isGameOver) _buildGameOverOverlay(controller),
           ],
         ),
@@ -63,49 +60,90 @@ class _GameScreenState extends State<GameScreen> {
     );
 
     return Container(
-      color: const Color(0xFF16213E),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0x001C1026), Color(0xFF1C1026)],
+        ),
+        border: Border(
+            top: BorderSide(color: Colors.white.withAlpha(10), width: 0.5)),
+      ),
       child: Row(
         children: [
-          // Seçim bilgisi
-          Expanded(
+          // Seçim bilgisi — chip tarzı
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(10),
+              borderRadius: BorderRadius.circular(10),
+              border:
+                  Border.all(color: Colors.white.withAlpha(15), width: 0.5),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '$selectedCount blok seçili (max 4)',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  '$selectedCount / 4 blok',
+                  style:
+                      const TextStyle(color: Colors.white38, fontSize: 10),
                 ),
+                const SizedBox(height: 1),
                 Text(
                   'Toplam: $sum',
                   style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15),
                 ),
               ],
             ),
           ),
+          const Spacer(),
           // İptal butonu
           if (selectedCount > 0)
-            TextButton(
-              onPressed: controller.clearSelection,
-              child: const Text('İPTAL', style: TextStyle(color: Colors.grey)),
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white38,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(color: Colors.white.withAlpha(25)),
+                  ),
+                ),
+                onPressed: controller.clearSelection,
+                child: const Text('iPTAL',
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+              ),
             ),
-          const SizedBox(width: 8),
-          // Onayla butonu
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  selectedCount >= 2 ? Colors.greenAccent : Colors.grey,
-              foregroundColor: Colors.black,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+          // Onayla butonu — pill shape
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: selectedCount >= 2
+                    ? const Color(0xFFFFB74D)
+                    : Colors.white.withAlpha(15),
+                foregroundColor:
+                    selectedCount >= 2 ? const Color(0xFF1C1026) : Colors.white24,
+                elevation: selectedCount >= 2 ? 4 : 0,
+                shadowColor: const Color(0xFFFFB74D).withAlpha(80),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+              ),
+              onPressed: selectedCount >= 2 ? controller.onConfirm : null,
+              child: const Text('ONAYLA',
+                  style:
+                      TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
             ),
-            onPressed: selectedCount >= 2 ? controller.onConfirm : null,
-            child: const Text('ONAYLA',
-                style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -113,48 +151,90 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildGameOverOverlay(GameController controller) {
-    return Container(
-      color: Colors.black87,
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: const Color(0xFF16213E),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.redAccent, width: 2),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'OYUN BİTTİ',
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 3,
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+      child: Container(
+        color: const Color(0xFF0D0A12).withAlpha(200),
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 36),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF2A1040), Color(0xFF1C1026)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: const Color(0xFFCE93D8).withAlpha(60), width: 1),
+              boxShadow: [
+                BoxShadow(
+                    color: const Color(0xFF7B1FA2).withAlpha(40),
+                    blurRadius: 30,
+                    spreadRadius: 5),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'OYUN BiTTi',
+                  style: TextStyle(
+                    color: Color(0xFFEF5350),
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 4,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Skorunuz: ${controller.score}',
-                style: const TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.greenAccent,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 32, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                const SizedBox(height: 20),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(8),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text('SKOR',
+                          style: TextStyle(
+                              color: Colors.white38,
+                              fontSize: 10,
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${controller.score}',
+                        style: const TextStyle(
+                            color: Color(0xFFFFB74D),
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900),
+                      ),
+                    ],
+                  ),
                 ),
-                onPressed: () => controller.initGame(),
-                child: const Text('YENİDEN OYNA',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
+                const SizedBox(height: 28),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFB74D),
+                    foregroundColor: const Color(0xFF1C1026),
+                    elevation: 4,
+                    shadowColor: const Color(0xFFFFB74D).withAlpha(80),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                  ),
+                  onPressed: () => controller.initGame(),
+                  child: const Text('YENiDEN OYNA',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          letterSpacing: 1)),
+                ),
+              ],
+            ),
           ),
         ),
       ),

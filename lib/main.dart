@@ -19,9 +19,11 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark().copyWith(
           colorScheme: const ColorScheme.dark(
-            primary: Colors.greenAccent,
-            surface: Color(0xFF16213E),
+            primary: Color(0xFFFFB74D),
+            secondary: Color(0xFFCE93D8),
+            surface: Color(0xFF1C1026),
           ),
+          scaffoldBackgroundColor: const Color(0xFF0D0A12),
         ),
         home: const GameScreen(),
       ),

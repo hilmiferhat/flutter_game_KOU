@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 
 const Map<int, Color> blockColors = {
-  1: Color(0xFFE53935), // Kırmızı
-  2: Color(0xFFFB8C00), // Turuncu
-  3: Color(0xFFFDD835), // Sarı
-  4: Color(0xFF43A047), // Yeşil
-  5: Color(0xFF00ACC1), // Cyan
-  6: Color(0xFF1E88E5), // Mavi
-  7: Color(0xFF8E24AA), // Mor
-  8: Color(0xFFE91E63), // Pembe
-  9: Color(0xFF6D4C41), // Kahverengi
+  1: Color(0xFFEF5350), // Mercan
+  2: Color(0xFFFF7043), // Turuncu
+  3: Color(0xFFFFCA28), // Altın
+  4: Color(0xFF66BB6A), // Zümrüt
+  5: Color(0xFF26C6DA), // Turkuaz
+  6: Color(0xFF42A5F5), // Gök mavi
+  7: Color(0xFFAB47BC), // Ametist
+  8: Color(0xFFEC407A), // Fuşya
+  9: Color(0xFF8D6E63), // Bronz
+};
+
+const Map<int, Color> blockColorsLight = {
+  1: Color(0xFFFFCDD2),
+  2: Color(0xFFFFCCBC),
+  3: Color(0xFFFFF9C4),
+  4: Color(0xFFC8E6C9),
+  5: Color(0xFFB2EBF2),
+  6: Color(0xFFBBDEFB),
+  7: Color(0xFFE1BEE7),
+  8: Color(0xFFF8BBD0),
+  9: Color(0xFFD7CCC8),
 };
 
 const Map<int, int> pointValues = {
@@ -31,6 +43,7 @@ class Block {
   Block({required this.value, this.isSelected = false});
 
   Color get color => blockColors[value]!;
+  Color get colorLight => blockColorsLight[value]!;
   int get points => pointValues[value]!;
 
   Block copyWith({int? value, bool? isSelected}) {
