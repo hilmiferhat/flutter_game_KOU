@@ -21,11 +21,10 @@ class _BoardWidgetState extends State<BoardWidget> {
     final box = _gridKey.currentContext?.findRenderObject() as RenderBox?;
     if (box == null) return null;
 
-    final cellWidth = box.size.width / GameController.cols;
-    final cellHeight = box.size.height / GameController.rows;
+    final cellSize = box.size.width / GameController.cols;
 
-    final col = (localPosition.dx / cellWidth).floor();
-    final row = (localPosition.dy / cellHeight).floor();
+    final col = (localPosition.dx / cellSize).floor();
+    final row = (localPosition.dy / cellSize).floor();
 
     if (row < 0 || row >= GameController.rows) return null;
     if (col < 0 || col >= GameController.cols) return null;
@@ -71,8 +70,8 @@ class _BoardWidgetState extends State<BoardWidget> {
     final controller = context.watch<GameController>();
 
     return GestureDetector(
-      onPanStart: (d) => _handlePanStart(d, controller),
-      onPanUpdate: (d) => _handlePanUpdate(d, controller),
+      onPanStart: (details) => _handlePanStart(details, controller),
+      onPanUpdate: (details) => _handlePanUpdate(details, controller),
       onPanEnd: _handlePanEnd,
       child: Container(
         key: _gridKey,
